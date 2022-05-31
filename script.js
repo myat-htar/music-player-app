@@ -72,20 +72,63 @@ let songs = [
     isFavourite: false,
   },
 ];
-let wrapper = document.querySelector(".wrapper");
-let loading = document.getElementById("loading");
-let browseSongs = document.querySelector(".browse-songs-btn");
-let introPageWrapper = document.getElementById("intro-page-wrapper");
-let songsPageWrapper = document.getElementById("songs-page-wrapper");
-let songsList = document.querySelector(".songs-list");
+const wrapper = document.querySelector(".wrapper"),
+  loading = document.getElementById("loading"),
+  browseSongs = document.querySelector(".browse-songs-btn"),
+  introPageWrapper = document.getElementById("intro-page-wrapper"),
+  songsPageWrapper = document.getElementById("songs-page-wrapper"),
+  songsList = document.querySelector(".songs-list"),
+  allSongsBtn = document.getElementById("all-songs-btn"),
+  favSongsBtn = document.getElementById("fav-songs-btn");
+let favSongs;
 // loading
 window.addEventListener("load", () => {
   loading.classList.add("hide-loading");
 
   wrapper.style.opacity = "1";
 });
-// design translating Pages
+// design shifting Pages
 browseSongs.addEventListener("click", (e) => {
   introPageWrapper.classList.add("shift");
   songsPageWrapper.classList.add("shift");
 });
+// storing on local storage
+localStorage.setItem("songs", JSON.stringify(songs));
+
+// displaying songs
+allSongsBtn.addEventListener("click", (e) => {
+  favSongsBtn.classList.remove("active");
+  e.currentTarget.classList.add("active");
+  document.querySelector(".btn-container + p ").style.display = "none";
+  showSongList(JSON.parse(getFromLocalStorage()));
+});
+favSongsBtn.addEventListener("click", (e) => {
+  allSongsBtn.classList.remove("active");
+  e.currentTarget.classList.add("active");
+  favSongs = JSON.parse(getFromLocalStorage()).filter(
+    (song) => song.isFavourite == true
+  );
+  if (favSongs.length < 1) {
+    document.querySelector(".btn-container + p ").style.display = "block";
+  }
+  showSongList(favSongs);
+});
+// functions
+function getFromLocalStorage() {
+  let songs = localStorage.getItem("songs");
+  return songs;
+}
+function showSongList(songs) {
+  songsList.innerHTML = songs
+    .map(({ id, songName, singer, image }) => {
+      return `<li data-id=${id}>
+              <img src="${image}" alt="${songName}-${singer}"/>
+              <div class="song-info">
+                <h3>${songName}</h3>
+                <p>${singer}</p>
+              </div>
+            </li>`;
+    })
+    .join("\n");
+}
+showSongList(JSON.parse(getFromLocalStorage()));
