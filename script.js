@@ -80,13 +80,13 @@ const wrapper = document.querySelector(".wrapper"),
   songsList = document.querySelector(".songs-list"),
   allSongsBtn = document.getElementById("all-songs-btn"),
   favSongsBtn = document.getElementById("fav-songs-btn"),
-  audio = document.querySelector("audio");
+  audio = document.querySelector("audio"),
+  songDataBox = document.querySelector(".song-data-box");
 let favSongs;
 let songsListArray;
 // loading
 window.addEventListener("load", () => {
   loading.classList.add("hide-loading");
-
   wrapper.style.opacity = "1";
 });
 // design shifting Pages
@@ -120,12 +120,13 @@ favSongsBtn.addEventListener("click", (e) => {
 
 // play songs
 songsList.addEventListener("click", (e) => {
+  let id = getSelectedListElement(e).dataset.id;
+  songsList.setAttribute("data-song_id", id);
   setAudioSrc(e);
   chooseSongsArray();
   audio.play();
-  let id = getSelectedListElement(e).dataset.id;
-  songsList.setAttribute("data-song_id", id);
   addStyleToPlayingSong();
+  showSongData(e);
 });
 
 // functions
@@ -168,7 +169,6 @@ function setAudioSrc(e) {
     (song) => song.id == getSelectedListElement(e).dataset.id
   );
   audio.src = song.audio;
-  return song;
 }
 function addStyleToPlayingSong() {
   let playingSongID = songsList.dataset.song_id;
@@ -189,4 +189,26 @@ function chooseSongsArray() {
     songsListArray = favSongs;
   }
   console.log(songsListArray);
+}
+// show song data box at bottom
+function showSongData(e) {
+  songDataBox.classList.add("shift");
+  let songData = [songs.find((song) => song.id == songsList.dataset.song_id)]
+    .map((song) => {
+      return `<img
+            src="${song.image}"
+            alt="${song.songName}- ${song.singer}"
+          />
+          <div class="song-data-box__song-info">
+            <h3>${song.songName}</h3>
+            <p>${song.singer}</p>
+          </div>
+          <div class="play-pause">
+            <i class="fa-solid fa-play play-pause-icon"></i>
+          </div>
+          <i class="fa-solid fa-forward-step" class="next"></i>`;
+    })
+    .join("\n");
+  songDataBox.innerHTML = songData;
+  console.log(songs.find((song) => song.id == songsList.dataset.song_id));
 }
