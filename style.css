@@ -2,7 +2,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@200;400;700&display=swap");
 :root {
   --primary-color: #404040;
-  --pink-rose: #ff6666;
+  --pink-rose: #fe7676;
   --dark-red: #a51212;
   --white: #fff;
   --light-gray: rgba(225, 225, 225, 0.9);
@@ -108,6 +108,7 @@ picture {
 }
 .btn-container + p {
   text-align: center;
+  margin-top: 5rem;
   display: none;
 }
 .btn-container {
@@ -136,6 +137,10 @@ picture {
   padding: 1rem 0;
   border-bottom: 1px solid var(--pink-rose);
   cursor: pointer;
+}
+.songs-list li.playing h3,
+.songs-list li.playing p {
+  color: var(--pink-rose);
 }
 .song-info {
   width: 100%;
