@@ -21,7 +21,7 @@ let songs = [
     singer: "Jo Jung Suk",
     audio: "./song audios/I like you- Jo Jung Suk.mp3",
     image: "./song images/I like you- Jo Jung Suk.jpeg",
-    isFavourite: true,
+    isFavourite: false,
   },
   {
     id: 4,
@@ -89,11 +89,16 @@ const wrapper = document.querySelector(".wrapper"),
   playingSongCurrentTime = document.querySelector(".currenttime"),
   playingSongDuration = document.querySelector(".duration"),
   playPauseBtn = document.querySelector(".play-pause"),
-  playPauseIcon = document.querySelector(".play-pause i");
+  playPauseIcon = document.querySelector(".play-pause i"),
+  favouriteIcon = document.querySelector(".fav-icon");
 
-let favSongs;
+let favSongs = getFromLocalStorage().filter((song) => song.isFavourite == true);
 let songsListArray;
-
+let playingSongID;
+let playingSongItem;
+if (getFromLocalStorage().length > 0) {
+  songs = getFromLocalStorage();
+}
 // loading
 window.addEventListener("load", () => {
   loading.classList.add("hide-loading");
@@ -106,36 +111,29 @@ browseSongs.addEventListener("click", (e) => {
   songsPageWrapper.classList.add("shift");
 });
 
-// storing on local storage
-localStorage.setItem("songs", JSON.stringify(songs));
-
 // displaying songs according to all or fav songs button
 allSongsBtn.addEventListener("click", (e) => {
   favSongsBtn.classList.remove("active");
   e.currentTarget.classList.add("active");
-  document.querySelector(".btn-container + p ").style.display = "none";
+  checkSongList(songs);
   showSongList(songs);
   addStyleToPlayingSong();
 });
 favSongsBtn.addEventListener("click", (e) => {
   allSongsBtn.classList.remove("active");
   e.currentTarget.classList.add("active");
-  favSongs = JSON.parse(getFromLocalStorage()).filter(
-    (song) => song.isFavourite == true
-  );
-  if (favSongs.length < 1) {
-    document.querySelector(".btn-container + p ").style.display = "block";
-  }
+  checkSongList(favSongs);
   showSongList(favSongs);
   addStyleToPlayingSong();
 });
 
 // play songs
 songsList.addEventListener("click", (e) => {
-  let id = getSelectedListElement(e).dataset.id;
-  songsList.setAttribute("data-song_id", id);
-  setAudioSrc(e);
-  chooseSongsArray();
+  playingSongID = getSelectedListElement(e).dataset.id;
+  songsList.setAttribute("data-song_id", playingSongID);
+  playingSongItem = songs.find((song) => songsList.dataset.song_id == song.id);
+  audio.src = playingSongItem.audio;
+  updateSongList();
   audio.play();
   addStyleToPlayingSong();
   showSongData(e);
@@ -158,7 +156,7 @@ playPauseBtn.addEventListener("click", togglePlayPause);
 
 // FUNCTIONS
 function getFromLocalStorage() {
-  let songs = localStorage.getItem("songs");
+  let songs = JSON.parse(localStorage.getItem("songs")) || [];
   return songs;
 }
 function showSongList(songs) {
@@ -174,7 +172,7 @@ function showSongList(songs) {
     })
     .join("\n");
 }
-showSongList(JSON.parse(getFromLocalStorage()));
+showSongList(songs);
 
 function getSelectedListElement(e) {
   let element;
@@ -191,12 +189,6 @@ function getSelectedListElement(e) {
   }
   return element;
 }
-function setAudioSrc(e) {
-  let song = songs.find(
-    (song) => song.id == getSelectedListElement(e).dataset.id
-  );
-  audio.src = song.audio;
-}
 function addStyleToPlayingSong() {
   let playingSongID = songsList.dataset.song_id;
   if (playingSongID) {
@@ -209,19 +201,28 @@ function addStyleToPlayingSong() {
     });
   }
 }
+// check song list is empty or not
+function checkSongList(songs) {
+  if (songs.length < 1) {
+    document.querySelector(".btn-container + p ").style.display = "block";
+  } else {
+    document.querySelector(".btn-container + p ").style.display = "none";
+  }
+}
 // deciding array according to all or fav
-function chooseSongsArray() {
+function updateSongList() {
   if (allSongsBtn.classList.contains("active")) {
     songsListArray = songs;
+    showSongList(songs);
   } else {
     songsListArray = favSongs;
+    showSongList(favSongs);
   }
-  console.log(songsListArray);
 }
 // show song data box at bottom
 function showSongData(e) {
   songDataBox.classList.add("show");
-  let songData = [songs.find((song) => song.id == songsList.dataset.song_id)]
+  let songData = [playingSongItem]
     .map((song) => {
       return `<img
             src="${song.image}"
@@ -248,12 +249,11 @@ function showSongData(e) {
 
 function openSongDetails() {
   songDetails.classList.add("show");
-  let playingSongData = songs.find(
-    (song) => songsList.dataset.song_id == song.id
-  );
-  playingSongImg.src = playingSongData.image;
-  playingSongName.textContent = playingSongData.songName;
-  playingSongSinger.textContent = playingSongData.singer;
+  playingSongImg.src = playingSongItem.image;
+  playingSongName.textContent = playingSongItem.songName;
+  playingSongSinger.textContent = playingSongItem.singer;
+  updateFavouriteIcon();
+  favouriteIcon.addEventListener("click", updateFavouriteList);
 }
 
 //update play/pause icon according to music play
@@ -271,4 +271,28 @@ function updatePlayPauseBtn(icon) {
 // make play/pause song on play/pause btn click
 function togglePlayPause() {
   audio.paused ? audio.play() : audio.pause();
+}
+// update favourite songs
+function updateFavouriteList() {
+  songs = songs.map((song) => {
+    if (song.id == playingSongItem.id) {
+      song.isFavourite = !song.isFavourite;
+    }
+    return song;
+  });
+
+  localStorage.setItem("songs", JSON.stringify(songs));
+  favSongs = getFromLocalStorage().filter((song) => song.isFavourite);
+  updateSongList();
+  checkSongList(favSongs);
+  updateFavouriteIcon();
+}
+function updateFavouriteIcon() {
+  if (playingSongItem.isFavourite) {
+    favouriteIcon.className = "fa-solid fa-heart fav-icon";
+    favouriteIcon.title = "Remove from Favourites";
+  } else {
+    favouriteIcon.className = "fa-regular fa-heart fav-icon";
+    favouriteIcon.title = "Add to Favourites";
+  }
 }

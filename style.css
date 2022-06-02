@@ -102,9 +102,7 @@ body {
 i,
 .material-symbols-outlined {
   cursor: pointer;
-}
-.song-data-box i {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
 }
 .play-pause {
   width: 2.5rem;
@@ -114,6 +112,7 @@ i,
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
   cursor: pointer;
 }
 .song-function-btns .play-pause {
@@ -253,7 +252,7 @@ picture {
   align-items: center;
   column-gap: 1rem;
   background-color: var(--very-dark-gray);
-  padding: 0rem 1.5rem;
+  padding: 0.5rem 1.5rem;
   cursor: default;
   transition: bottom 0.3s ease;
 }
@@ -270,14 +269,16 @@ picture {
 .song-data-box__song-info {
   margin-right: auto;
 }
-
+.song-data-box__song-info h3 {
+  font-size: 1rem;
+}
 /* song data detail and function */
 .song-details {
   position: absolute;
   bottom: -100%;
   left: 0;
   width: 100%;
-  height: 92%;
+  height: 94%;
   display: flex;
   flex-direction: column;
   background-color: var(--dark-gray);
@@ -323,6 +324,11 @@ picture {
   align-items: center;
   justify-content: space-around;
 }
+/* fav icon styling */
+.fav-icon {
+  color: var(--pink-rose);
+}
+
 /* footer */
 footer p {
   color: var(--dark-red);
