@@ -52,7 +52,7 @@ body {
   visibility: hidden;
   z-index: -999;
 }
-/* Btn */
+/* ...BUTTON... */
 .btn {
   color: var(--white);
   font-family: "Josefin Sans", sans-serif;
@@ -99,9 +99,37 @@ body {
 .songs-btn.active:hover::before {
   background-color: var(--dark-gray);
 }
-i {
+i,
+.material-symbols-outlined {
   cursor: pointer;
 }
+.song-data-box i {
+  font-size: 1.2rem;
+}
+.play-pause {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: radial-gradient(rgb(238, 120, 140), rgb(253, 63, 63));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.song-function-btns .play-pause {
+  width: 3rem;
+  height: 3rem;
+}
+.song-function-btns .play-pause-icon {
+  font-size: 1.5rem;
+}
+.slide-down,
+.prev,
+.next {
+  font-size: 1.6rem;
+}
+/* END OF BUTTON */
+
 /* most outside parent wrapper */
 .wrapper {
   position: relative;
@@ -229,7 +257,7 @@ picture {
   cursor: default;
   transition: bottom 0.3s ease;
 }
-.song-data-box.shift {
+.song-data-box.show {
   bottom: 0;
 }
 .song-data-box img {
@@ -242,18 +270,58 @@ picture {
 .song-data-box__song-info {
   margin-right: auto;
 }
-.song-data-box i {
-  font-size: 1.2rem;
+
+/* song data detail and function */
+.song-details {
+  position: absolute;
+  bottom: -100%;
+  left: 0;
+  width: 100%;
+  height: 92%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--dark-gray);
+  border-radius: var(--base-border-radius);
+  border: 2px solid var(--pink-rose);
+  padding: 1rem 1.5rem;
+  z-index: 999;
+  transition: bottom 0.3s ease;
 }
-.play-pause {
-  width: 2.5rem;
-  height: 2.5rem;
-  background: radial-gradient(rgb(238, 120, 140), rgb(253, 63, 63));
-  border-radius: 50%;
+.song-details.show {
+  bottom: 0;
+}
+.song-img {
+  width: 85%;
+  height: 16rem;
+  object-fit: cover;
+  margin: 1rem auto 1.5rem;
+  border-radius: var(--base-border-radius);
+}
+.song-name,
+.singer {
+  text-align: center;
+  line-height: 1.4;
+}
+.progress-bar {
+  width: 100%;
+  height: 3px;
+  margin: 2rem auto;
+  background-color: var(--very-dark-gray);
+}
+.progress-bar-data {
+  width: 25%;
+  height: 100%;
+  background-color: var(--pink-rose);
+}
+.song-timer {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+.song-function-btns {
   display: flex;
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  justify-content: space-around;
 }
 /* footer */
 footer p {

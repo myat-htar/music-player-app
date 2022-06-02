@@ -81,19 +81,31 @@ const wrapper = document.querySelector(".wrapper"),
   allSongsBtn = document.getElementById("all-songs-btn"),
   favSongsBtn = document.getElementById("fav-songs-btn"),
   audio = document.querySelector("audio"),
-  songDataBox = document.querySelector(".song-data-box");
+  songDataBox = document.querySelector(".song-data-box"),
+  songDetails = document.querySelector(".song-details"),
+  playingSongImg = document.querySelector(".song-img"),
+  playingSongName = document.querySelector(".song-name"),
+  playingSongSinger = document.querySelector(".singer"),
+  playingSongCurrentTime = document.querySelector(".currenttime"),
+  playingSongDuration = document.querySelector(".duration"),
+  playPauseBtn = document.querySelector(".play-pause"),
+  playPauseIcon = document.querySelector(".play-pause i");
+
 let favSongs;
 let songsListArray;
+
 // loading
 window.addEventListener("load", () => {
   loading.classList.add("hide-loading");
   wrapper.style.opacity = "1";
 });
+
 // design shifting Pages
 browseSongs.addEventListener("click", (e) => {
   introPageWrapper.classList.add("shift");
   songsPageWrapper.classList.add("shift");
 });
+
 // storing on local storage
 localStorage.setItem("songs", JSON.stringify(songs));
 
@@ -129,7 +141,17 @@ songsList.addEventListener("click", (e) => {
   showSongData(e);
 });
 
-// functions
+// open song details box
+songDataBox.addEventListener("click", (e) => {
+  if (e.target.tagName !== "I" && !e.target.classList.contains("play-pause")) {
+    openSongDetails();
+  }
+});
+document.querySelector(".slide-down").addEventListener("click", () => {
+  songDetails.classList.remove("show");
+});
+
+// FUNCTIONS
 function getFromLocalStorage() {
   let songs = localStorage.getItem("songs");
   return songs;
@@ -182,6 +204,7 @@ function addStyleToPlayingSong() {
     });
   }
 }
+// deciding array according to all or fav
 function chooseSongsArray() {
   if (allSongsBtn.classList.contains("active")) {
     songsListArray = songs;
@@ -192,7 +215,7 @@ function chooseSongsArray() {
 }
 // show song data box at bottom
 function showSongData(e) {
-  songDataBox.classList.add("shift");
+  songDataBox.classList.add("show");
   let songData = [songs.find((song) => song.id == songsList.dataset.song_id)]
     .map((song) => {
       return `<img
@@ -204,11 +227,20 @@ function showSongData(e) {
             <p>${song.singer}</p>
           </div>
           <div class="play-pause">
-            <i class="fa-solid fa-play play-pause-icon"></i>
+            <i class="fa-solid fa-pause"></i>
           </div>
           <i class="fa-solid fa-forward-step" class="next"></i>`;
     })
     .join("\n");
   songDataBox.innerHTML = songData;
-  console.log(songs.find((song) => song.id == songsList.dataset.song_id));
+}
+
+function openSongDetails() {
+  songDetails.classList.add("show");
+  let playingSongData = songs.find(
+    (song) => songsList.dataset.song_id == song.id
+  );
+  playingSongImg.src = playingSongData.image;
+  playingSongName.textContent = playingSongData.songName;
+  playingSongSinger.textContent = playingSongData.singer;
 }

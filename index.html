@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <!-- font awesome icon cdn link -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
@@ -12,6 +13,12 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <!-- google font icon -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
+    <!-- custom css -->
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
@@ -111,6 +118,37 @@
         <!-- song data box at bottom -->
         <div class="song-data-box"></div>
 
+        <!-- song data and function -->
+        <div class="song-details">
+          <i class="fa-solid fa-chevron-down slide-down"></i>
+          <img
+            class="song-img"
+            src="./song images/Butterfly- Jeon Mi Do.jpg"
+            alt=""
+          />
+          <h3 class="song-name">Butterfly</h3>
+          <p class="singer">Mi Do</p>
+
+          <div class="progress-bar">
+            <div class="progress-bar-data"></div>
+            <div class="song-timer">
+              <small class="currentTime">1:04</small>
+              <small class="duration">4:23</small>
+            </div>
+          </div>
+
+          <div class="song-function-btns">
+            <!-- <span class="material-symbols-outlined"> shuffle </span> -->
+            <span class="material-symbols-outlined"> repeat </span>
+            <!-- <span class="material-symbols-outlined"> repeat_one </span> -->
+            <i class="fa-solid fa-backward-step prev"></i>
+            <div class="play-pause">
+              <i class="fa-solid fa-play"></i>
+            </div>
+            <i class="fa-solid fa-forward-step next"></i>
+            <i class="fa-solid fa-heart"></i>
+          </div>
+        </div>
         <audio src="" class="audio"></audio>
       </div>
     </div>
