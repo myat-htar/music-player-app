@@ -151,6 +151,11 @@ document.querySelector(".slide-down").addEventListener("click", () => {
   songDetails.classList.remove("show");
 });
 
+// update play/pause btn icon
+updatePlayPauseBtn(playPauseIcon);
+// play/pause song on play/pause btn click
+playPauseBtn.addEventListener("click", togglePlayPause);
+
 // FUNCTIONS
 function getFromLocalStorage() {
   let songs = localStorage.getItem("songs");
@@ -233,6 +238,12 @@ function showSongData(e) {
     })
     .join("\n");
   songDataBox.innerHTML = songData;
+
+  // making play pause btn work
+  const playPauseBtn = document.querySelector(".play-pause");
+  const playPauseIcon = document.querySelector(".play-pause i");
+  updatePlayPauseBtn(playPauseIcon);
+  playPauseBtn.addEventListener("click", togglePlayPause);
 }
 
 function openSongDetails() {
@@ -243,4 +254,21 @@ function openSongDetails() {
   playingSongImg.src = playingSongData.image;
   playingSongName.textContent = playingSongData.songName;
   playingSongSinger.textContent = playingSongData.singer;
+}
+
+//update play/pause icon according to music play
+function updatePlayPauseBtn(icon) {
+  audio.addEventListener("play", update);
+  audio.addEventListener("pause", update);
+  function update() {
+    if (audio.paused) {
+      icon.className = `fa-solid fa-play`;
+    } else {
+      icon.className = `fa-solid fa-pause`;
+    }
+  }
+}
+// make play/pause song on play/pause btn click
+function togglePlayPause() {
+  audio.paused ? audio.play() : audio.pause();
 }
