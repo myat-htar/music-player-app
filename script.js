@@ -92,13 +92,15 @@ const wrapper = document.querySelector(".wrapper"),
   playPauseIcon = songDetails.querySelector(".play-pause i"),
   favouriteIcon = songDetails.querySelector(".fav-icon"),
   nextBtn = songDetails.querySelector(".next"),
-  prevBtn = songDetails.querySelector(".prev");
+  prevBtn = songDetails.querySelector(".prev"),
+  repeatSongList = songDetails.querySelector(".repeat-song-list");
 
 let favSongs = getFromLocalStorage().filter((song) => song.isFavourite == true),
   songsListArray,
   playingSongID,
   playingSongItem,
-  songIndex;
+  songIndex,
+  isShuffle = false;
 if (getFromLocalStorage().length > 0) {
   songs = getFromLocalStorage();
 }
@@ -164,6 +166,10 @@ nextBtn.addEventListener("click", playNextSong);
 // previous song
 prevBtn.addEventListener("click", playPreviousSong);
 
+// change repeat songlist icon
+repeatSongList.addEventListener("click", (e) => changeRepeatIcon(e));
+// when song ended, choose which song to play
+audio.addEventListener("ended", (e) => chooseSongToPlay(e));
 // FUNCTIONS
 function getFromLocalStorage() {
   let songs = JSON.parse(localStorage.getItem("songs")) || [];
@@ -312,12 +318,28 @@ function updateFavouriteIcon() {
 
 // next song
 function playNextSong() {
+  // getting index of current playing song
   songsListArray.forEach((song, index) => {
     if (song.id == playingSongID) {
       songIndex = index;
     }
   });
-  songIndex = songIndex + 1;
+
+  // check song is shuffled or not
+  if (isShuffle) {
+    let randomIndex = Math.floor(Math.random() * songsListArray.length);
+    if (songsListArray.length > 1 && songIndex == randomIndex) {
+      while (songIndex == randomIndex) {
+        songIndex = Math.floor(Math.random() * songsListArray.length);
+      }
+    } else {
+      songIndex = randomIndex;
+    }
+  } else {
+    songIndex = songIndex + 1;
+  }
+
+  // check song index is greater than the number of total songs or not
   if (songIndex > songsListArray.length - 1) {
     songIndex = 0;
   }
@@ -362,4 +384,36 @@ function updateSong() {
   updateSongDetails(playingSongItem);
 }
 
-// format of repeat according to button icon
+// change repeat icon
+function changeRepeatIcon(e) {
+  let iconText = e.currentTarget.innerText;
+  switch (iconText) {
+    case "repeat":
+      isShuffle = false;
+      e.currentTarget.innerText = "repeat_one";
+      e.currentTarget.title = "Song Looped";
+      break;
+    case "repeat_one":
+      isShuffle = true;
+      e.currentTarget.innerText = "shuffle";
+      e.currentTarget.title = "Playback Shuffled";
+      break;
+    case "shuffle":
+      isShuffle = false;
+      e.currentTarget.innerText = "repeat";
+      e.currentTarget.title = "Playlist Looped";
+      break;
+  }
+}
+// format of repeat according to repeat button icon
+function chooseSongToPlay(e) {
+  let iconText = repeatSongList.innerText;
+  switch (iconText) {
+    case "repeat":
+    case "shuffle":
+      playNextSong();
+    case "repeat_one":
+      audio.currentTime = 0;
+      audio.play();
+  }
+}
