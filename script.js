@@ -86,15 +86,15 @@ const wrapper = document.querySelector(".wrapper"),
   playingSongImg = songDetails.querySelector(".song-img"),
   playingSongName = songDetails.querySelector(".song-name"),
   playingSongSinger = songDetails.querySelector(".singer"),
-  playingSongCurrentTime = songDetails.querySelector(".currenttime"),
+  playingSongCurrentTime = songDetails.querySelector(".currentTime"),
   playingSongDuration = songDetails.querySelector(".duration"),
+  progressBarData = songDetails.querySelector(".progress-bar-data"),
   playPauseBtn = songDetails.querySelector(".play-pause"),
   playPauseIcon = songDetails.querySelector(".play-pause i"),
   favouriteIcon = songDetails.querySelector(".fav-icon"),
   nextBtn = songDetails.querySelector(".next"),
   prevBtn = songDetails.querySelector(".prev"),
   repeatSongList = songDetails.querySelector(".repeat-song-list");
-
 let favSongs = getFromLocalStorage().filter((song) => song.isFavourite == true),
   songsListArray,
   playingSongID,
@@ -162,14 +162,26 @@ playPauseBtn.addEventListener("click", togglePlayPause);
 
 // next song
 nextBtn.addEventListener("click", playNextSong);
-
 // previous song
 prevBtn.addEventListener("click", playPreviousSong);
 
 // change repeat songlist icon
 repeatSongList.addEventListener("click", (e) => changeRepeatIcon(e));
 // when song ended, choose which song to play
-audio.addEventListener("ended", (e) => chooseSongToPlay(e));
+audio.addEventListener("ended", chooseSongToPlay);
+
+// updating current time and duration and progress bar width
+audio.addEventListener("timeupdate", (e) => {
+  let currentTime = e.target.currentTime;
+  let duration = e.target.duration;
+  let progressBarWidth = (currentTime / duration) * 100;
+  progressBarData.style.width = `${progressBarWidth}%`;
+  playingSongCurrentTime.textContent = getFormattedTimeInMinAndSec(currentTime);
+});
+audio.addEventListener("loadeddata", (e) => {
+  console.log(e.target.duration);
+  playingSongDuration.textContent = getFormattedTimeInMinAndSec(audio.duration);
+});
 // FUNCTIONS
 function getFromLocalStorage() {
   let songs = JSON.parse(localStorage.getItem("songs")) || [];
@@ -406,7 +418,7 @@ function changeRepeatIcon(e) {
   }
 }
 // format of repeat according to repeat button icon
-function chooseSongToPlay(e) {
+function chooseSongToPlay() {
   let iconText = repeatSongList.innerText;
   switch (iconText) {
     case "repeat":
@@ -416,4 +428,13 @@ function chooseSongToPlay(e) {
       audio.currentTime = 0;
       audio.play();
   }
+}
+// format the current time and duration
+function getFormattedTimeInMinAndSec(time) {
+  let min = parseInt(time / 60);
+  let sec = parseInt(time % 60);
+  if (sec < 10) {
+    sec = `0${sec}`;
+  }
+  return `${min}:${sec}`;
 }
