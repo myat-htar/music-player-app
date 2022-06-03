@@ -83,19 +83,22 @@ const wrapper = document.querySelector(".wrapper"),
   audio = document.querySelector("audio"),
   songDataBox = document.querySelector(".song-data-box"),
   songDetails = document.querySelector(".song-details"),
-  playingSongImg = document.querySelector(".song-img"),
-  playingSongName = document.querySelector(".song-name"),
-  playingSongSinger = document.querySelector(".singer"),
-  playingSongCurrentTime = document.querySelector(".currenttime"),
-  playingSongDuration = document.querySelector(".duration"),
-  playPauseBtn = document.querySelector(".play-pause"),
-  playPauseIcon = document.querySelector(".play-pause i"),
-  favouriteIcon = document.querySelector(".fav-icon");
+  playingSongImg = songDetails.querySelector(".song-img"),
+  playingSongName = songDetails.querySelector(".song-name"),
+  playingSongSinger = songDetails.querySelector(".singer"),
+  playingSongCurrentTime = songDetails.querySelector(".currenttime"),
+  playingSongDuration = songDetails.querySelector(".duration"),
+  playPauseBtn = songDetails.querySelector(".play-pause"),
+  playPauseIcon = songDetails.querySelector(".play-pause i"),
+  favouriteIcon = songDetails.querySelector(".fav-icon"),
+  nextBtn = songDetails.querySelector(".next"),
+  prevBtn = songDetails.querySelector(".prev");
 
-let favSongs = getFromLocalStorage().filter((song) => song.isFavourite == true);
-let songsListArray;
-let playingSongID;
-let playingSongItem;
+let favSongs = getFromLocalStorage().filter((song) => song.isFavourite == true),
+  songsListArray,
+  playingSongID,
+  playingSongItem,
+  songIndex;
 if (getFromLocalStorage().length > 0) {
   songs = getFromLocalStorage();
 }
@@ -136,13 +139,14 @@ songsList.addEventListener("click", (e) => {
   updateSongList();
   audio.play();
   addStyleToPlayingSong();
-  showSongData(e);
+  showSongData(playingSongItem);
 });
 
 // open song details box
 songDataBox.addEventListener("click", (e) => {
   if (e.target.tagName !== "I" && !e.target.classList.contains("play-pause")) {
-    openSongDetails();
+    songDetails.classList.add("show");
+    updateSongDetails(playingSongItem);
   }
 });
 document.querySelector(".slide-down").addEventListener("click", () => {
@@ -153,6 +157,12 @@ document.querySelector(".slide-down").addEventListener("click", () => {
 updatePlayPauseBtn(playPauseIcon);
 // play/pause song on play/pause btn click
 playPauseBtn.addEventListener("click", togglePlayPause);
+
+// next song
+nextBtn.addEventListener("click", playNextSong);
+
+// previous song
+prevBtn.addEventListener("click", playPreviousSong);
 
 // FUNCTIONS
 function getFromLocalStorage() {
@@ -220,7 +230,7 @@ function updateSongList() {
   }
 }
 // show song data box at bottom
-function showSongData(e) {
+function showSongData(playingSongItem) {
   songDataBox.classList.add("show");
   let songData = [playingSongItem]
     .map((song) => {
@@ -235,7 +245,7 @@ function showSongData(e) {
           <div class="play-pause">
             <i class="fa-solid fa-pause"></i>
           </div>
-          <i class="fa-solid fa-forward-step" class="next"></i>`;
+          <i class="fa-solid fa-forward-step next"></i>`;
     })
     .join("\n");
   songDataBox.innerHTML = songData;
@@ -245,10 +255,13 @@ function showSongData(e) {
   const playPauseIcon = document.querySelector(".play-pause i");
   updatePlayPauseBtn(playPauseIcon);
   playPauseBtn.addEventListener("click", togglePlayPause);
+
+  // attaching event listener to next btn
+  const nextBtn = document.querySelector(".next");
+  nextBtn.addEventListener("click", playNextSong);
 }
 
-function openSongDetails() {
-  songDetails.classList.add("show");
+function updateSongDetails(playingSongItem) {
   playingSongImg.src = playingSongItem.image;
   playingSongName.textContent = playingSongItem.songName;
   playingSongSinger.textContent = playingSongItem.singer;
@@ -296,3 +309,57 @@ function updateFavouriteIcon() {
     favouriteIcon.title = "Add to Favourites";
   }
 }
+
+// next song
+function playNextSong() {
+  songsListArray.forEach((song, index) => {
+    if (song.id == playingSongID) {
+      songIndex = index;
+    }
+  });
+  songIndex = songIndex + 1;
+  if (songIndex > songsListArray.length - 1) {
+    songIndex = 0;
+  }
+
+  songsListArray.forEach((song, index) => {
+    if (index == songIndex) {
+      playingSongID = song.id;
+      songsList.setAttribute("data-song_id", song.id);
+    }
+  });
+  updateSong();
+}
+
+// prev song
+function playPreviousSong() {
+  songsListArray.forEach((song, index) => {
+    if (song.id == playingSongID) {
+      songIndex = index;
+    }
+  });
+  songIndex = songIndex - 1;
+  if (songIndex < 0) {
+    songIndex = songsListArray.length - 1;
+  }
+
+  songsListArray.forEach((song, index) => {
+    if (index == songIndex) {
+      playingSongID = song.id;
+      songsList.setAttribute("data-song_id", song.id);
+    }
+  });
+  updateSong();
+}
+
+// update song data on prev/next click
+function updateSong() {
+  playingSongItem = songs.find((song) => songsList.dataset.song_id == song.id);
+  showSongData(playingSongItem);
+  audio.src = playingSongItem.audio;
+  audio.play();
+  addStyleToPlayingSong();
+  updateSongDetails(playingSongItem);
+}
+
+// format of repeat according to button icon
