@@ -88,6 +88,7 @@ const wrapper = document.querySelector(".wrapper"),
   playingSongSinger = songDetails.querySelector(".singer"),
   playingSongCurrentTime = songDetails.querySelector(".currentTime"),
   playingSongDuration = songDetails.querySelector(".duration"),
+  progressBar = songDetails.querySelector(".progress-bar"),
   progressBarData = songDetails.querySelector(".progress-bar-data"),
   playPauseBtn = songDetails.querySelector(".play-pause"),
   playPauseIcon = songDetails.querySelector(".play-pause i"),
@@ -178,10 +179,27 @@ audio.addEventListener("timeupdate", (e) => {
   progressBarData.style.width = `${progressBarWidth}%`;
   playingSongCurrentTime.textContent = getFormattedTimeInMinAndSec(currentTime);
 });
-audio.addEventListener("loadeddata", (e) => {
-  console.log(e.target.duration);
+audio.addEventListener("loadeddata", () => {
   playingSongDuration.textContent = getFormattedTimeInMinAndSec(audio.duration);
 });
+
+// click progress bar to update current time
+let pointerDown;
+progressBar.addEventListener("click", (e) => updateCurrentTime(e));
+progressBar.addEventListener(
+  "pointermove",
+  (e) => pointerDown && updateCurrentTime(e)
+);
+progressBar.addEventListener("pointerdown", (e) => {
+  progressBar.setPointerCapture(e.pointerId);
+  pointerDown = true;
+  audio.volume = 0;
+});
+progressBar.addEventListener("pointerup", () => {
+  pointerDown = false;
+  audio.volume = 1;
+});
+
 // FUNCTIONS
 function getFromLocalStorage() {
   let songs = JSON.parse(localStorage.getItem("songs")) || [];
@@ -437,4 +455,10 @@ function getFormattedTimeInMinAndSec(time) {
     sec = `0${sec}`;
   }
   return `${min}:${sec}`;
+}
+// update current time
+function updateCurrentTime(e) {
+  let clickedPosition = e.offsetX;
+  let totalProgressWidth = progressBar.clientWidth;
+  audio.currentTime = (clickedPosition / totalProgressWidth) * audio.duration;
 }

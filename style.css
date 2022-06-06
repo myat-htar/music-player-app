@@ -3,7 +3,6 @@
 :root {
   --dark-gray: #404040;
   --pink-rose: #fe7676;
-  --dark-red: #a51212;
   --very-dark-gray: rgba(38, 38, 38, 0.9);
   --white: #fff;
   --light-gray: rgba(225, 225, 225, 0.9);
@@ -31,6 +30,7 @@ body {
   justify-content: center;
   row-gap: 1rem;
   height: 100vh;
+  min-height: 37.5rem;
   font-family: "Heebo", sans-serif;
 }
 /* Preloader */
@@ -40,7 +40,11 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: transparent;
+  background: linear-gradient(
+    to right bottom,
+    rgb(247, 86, 116),
+    rgb(255, 77, 77)
+  );
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -69,19 +73,30 @@ body {
   padding: 1rem;
   border-radius: var(--base-border-radius);
   box-shadow: var(--box-shadow-light);
-  margin-top: 3rem;
+  margin-top: 5rem;
+  transition: all 0.3s ease;
 }
 .browse-songs-btn i {
   vertical-align: middle;
   font-size: 2rem;
 }
+.browse-songs-btn:hover {
+  background-color: rgb(249, 91, 91);
+}
 .songs-btn {
   font-size: 1.5rem;
   background-color: transparent;
   position: relative;
+  transition: all 0.3s ease;
+}
+.songs-btn:hover {
+  color: var(--light-gray);
 }
 .songs-btn.active {
   z-index: 1;
+}
+.songs-btn.active:hover {
+  color: inherit;
 }
 .songs-btn.active::before {
   position: absolute;
@@ -159,7 +174,7 @@ i,
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  row-gap: 5rem;
+  row-gap: 3rem;
 }
 picture {
   display: block;
@@ -228,7 +243,7 @@ picture {
 .song-info h3,
 .song-info p {
   white-space: nowrap;
-  width: calc(100% - 1rem);
+  width: calc(100% - 2rem);
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -279,8 +294,10 @@ picture {
   left: 0;
   width: 100%;
   height: 94%;
+  max-height: 32.5rem;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   background-color: var(--dark-gray);
   border-radius: var(--base-border-radius);
   border: 2px solid var(--pink-rose);
@@ -309,6 +326,7 @@ picture {
   margin: 1rem auto 0.5rem;
   background-color: var(--very-dark-gray);
   border-radius: 40px;
+  cursor: pointer;
 }
 .progress-bar-data {
   width: 0%;
@@ -350,7 +368,7 @@ picture {
 
 /* footer */
 footer p {
-  color: var(--dark-red);
+  color: var(--dark-gray);
 }
 footer a {
   color: var(--white);
