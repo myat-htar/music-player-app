@@ -139,6 +139,7 @@ songsList.addEventListener("click", (e) => {
   songsList.setAttribute("data-song_id", playingSongID);
   playingSongItem = songs.find((song) => songsList.dataset.song_id == song.id);
   audio.src = playingSongItem.audio;
+  audio.currentTime = 0;
   updateSongList();
   audio.play();
   addStyleToPlayingSong();
@@ -199,7 +200,19 @@ progressBar.addEventListener("pointerup", () => {
   pointerDown = false;
   audio.volume = 1;
 });
-
+// make progress bar work in mobile
+let touchDown;
+progressBar.addEventListener("touchmove", (e) => {
+  touchDown && updateCurrentTimeInTouchDevices(e);
+});
+progressBar.addEventListener("touchstart", (e) => {
+  touchDown = true;
+  audio.volume = 0;
+});
+progressBar.addEventListener("touchend", () => {
+  touchDown = false;
+  audio.volume = 1;
+});
 // FUNCTIONS
 function getFromLocalStorage() {
   let songs = JSON.parse(localStorage.getItem("songs")) || [];
@@ -459,6 +472,13 @@ function getFormattedTimeInMinAndSec(time) {
 // update current time
 function updateCurrentTime(e) {
   let clickedPosition = e.offsetX;
-  let totalProgressWidth = progressBar.clientWidth;
-  audio.currentTime = (clickedPosition / totalProgressWidth) * audio.duration;
+  let progressWidth = progressBar.clientWidth;
+  audio.currentTime = (clickedPosition / progressWidth) * audio.duration;
+}
+function updateCurrentTimeInTouchDevices(e) {
+  let progressWidth = progressBar.clientWidth;
+  let clickedPosition =
+    e.touches[0].clientX - e.target.getBoundingClientRect().x;
+  if (clickedPosition > 0 && clickedPosition <= progressWidth)
+    audio.currentTime = (clickedPosition / progressWidth) * audio.duration;
 }
