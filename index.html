@@ -19,7 +19,8 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
     />
     <!-- custom css -->
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./css/normalize.css" />
+    <link rel="stylesheet" href="./css/style.css" />
   </head>
   <body>
     <!-- LOADER -->
@@ -90,12 +91,12 @@
           <picture>
             <source
               class="hero-img"
-              media="(min-width: 50rem)"
-              srcset="./svgs/music-hero-desktop.svg"
+              media="(min-height: 40rem)"
+              srcset="./svgs/music-hero-mobile.svg"
             />
             <img
               class="hero-img"
-              src="./svgs/music-hero-mobile.svg"
+              src="./svgs/music-hero-desktop.svg"
               alt="Music hero image"
             />
           </picture>
@@ -110,6 +111,7 @@
             </button>
             <button class="btn songs-btn" id="fav-songs-btn">Favourites</button>
           </div>
+          <p class="note"></p>
           <!-- songs list -->
           <p>There is no Favourite Song.</p>
           <ul role="list" class="songs-list"></ul>
@@ -136,7 +138,6 @@
             <small class="currentTime"></small>
             <small class="duration"></small>
           </div>
-
           <div class="song-function-btns">
             <!-- <span class="material-symbols-outlined"> shuffle </span> -->
             <span

@@ -95,20 +95,25 @@ const wrapper = document.querySelector(".wrapper"),
   favouriteIcon = songDetails.querySelector(".fav-icon"),
   nextBtn = songDetails.querySelector(".next"),
   prevBtn = songDetails.querySelector(".prev"),
-  repeatSongList = songDetails.querySelector(".repeat-song-list");
+  repeatSongList = songDetails.querySelector(".repeat-song-list"),
+  note = document.querySelector(".note");
 let favSongs = getFromLocalStorage().filter((song) => song.isFavourite == true),
   songsListArray,
   playingSongID,
   playingSongItem,
   songIndex,
-  isShuffle = false;
+  isShuffle = false,
+  noteText;
+
 if (getFromLocalStorage().length > 0) {
   songs = getFromLocalStorage();
 }
 // loading
 window.addEventListener("load", () => {
-  loading.classList.add("hide-loading");
-  wrapper.style.opacity = "1";
+  setTimeout(() => {
+    loading.classList.add("hide-loading");
+    wrapper.style.opacity = "1";
+  }, 700);
 });
 
 // design shifting Pages
@@ -144,6 +149,10 @@ songsList.addEventListener("click", (e) => {
   audio.play();
   addStyleToPlayingSong();
   showSongData(playingSongItem);
+
+  // display note what song list is playing
+  getNoteText();
+  displayNoteText(noteText);
 });
 
 // open song details box
@@ -185,19 +194,18 @@ audio.addEventListener("loadeddata", () => {
 });
 
 // click progress bar to update current time
-let pointerDown;
+let mouseDown;
 progressBar.addEventListener("click", (e) => updateCurrentTime(e));
 progressBar.addEventListener(
-  "pointermove",
-  (e) => pointerDown && updateCurrentTime(e)
+  "mousemove",
+  (e) => mouseDown && updateCurrentTime(e)
 );
-progressBar.addEventListener("pointerdown", (e) => {
-  progressBar.setPointerCapture(e.pointerId);
-  pointerDown = true;
+progressBar.addEventListener("mousedown", (e) => {
+  mouseDown = true;
   audio.volume = 0;
 });
-progressBar.addEventListener("pointerup", () => {
-  pointerDown = false;
+progressBar.addEventListener("mouseup", () => {
+  mouseDown = false;
   audio.volume = 1;
 });
 // make progress bar work in mobile
@@ -263,9 +271,9 @@ function addStyleToPlayingSong() {
 // check song list is empty or not
 function checkSongList(songs) {
   if (songs.length < 1) {
-    document.querySelector(".btn-container + p ").style.display = "block";
+    document.querySelector(".note + p ").style.display = "block";
   } else {
-    document.querySelector(".btn-container + p ").style.display = "none";
+    document.querySelector(".note + p ").style.display = "none";
   }
 }
 // deciding array according to all or fav
@@ -359,7 +367,8 @@ function updateFavouriteIcon() {
   }
 }
 
-// next song
+// play previous/next song
+// play next song
 function playNextSong() {
   // getting index of current playing song
   songsListArray.forEach((song, index) => {
@@ -396,7 +405,7 @@ function playNextSong() {
   updateSong();
 }
 
-// prev song
+// play prev song
 function playPreviousSong() {
   songsListArray.forEach((song, index) => {
     if (song.id == playingSongID) {
@@ -417,7 +426,6 @@ function playPreviousSong() {
   updateSong();
 }
 
-// update song data on prev/next click
 function updateSong() {
   playingSongItem = songs.find((song) => songsList.dataset.song_id == song.id);
   showSongData(playingSongItem);
@@ -430,21 +438,27 @@ function updateSong() {
 // change repeat icon
 function changeRepeatIcon(e) {
   let iconText = e.currentTarget.innerText;
+  noteText = songsListArray == favSongs ? "* Favourite Songs" : "* All Songs";
   switch (iconText) {
     case "repeat":
       isShuffle = false;
       e.currentTarget.innerText = "repeat_one";
       e.currentTarget.title = "Song Looped";
+      // changing note text according to button icon
+      noteText = `* Current Song Looped`;
+      displayNoteText(noteText);
       break;
     case "repeat_one":
       isShuffle = true;
       e.currentTarget.innerText = "shuffle";
       e.currentTarget.title = "Playback Shuffled";
+      displayNoteText(`${noteText} Shuffled`);
       break;
     case "shuffle":
       isShuffle = false;
       e.currentTarget.innerText = "repeat";
       e.currentTarget.title = "Playlist Looped";
+      displayNoteText(`${noteText} Looped`);
       break;
   }
 }
@@ -481,4 +495,27 @@ function updateCurrentTimeInTouchDevices(e) {
     e.touches[0].clientX - e.target.getBoundingClientRect().x;
   if (clickedPosition > 0 && clickedPosition <= progressWidth)
     audio.currentTime = (clickedPosition / progressWidth) * audio.duration;
+}
+
+// display note what song list is playing
+function getNoteText() {
+  switch (repeatSongList.innerText) {
+    case "repeat":
+      noteText = `${
+        songsListArray == favSongs ? "* Favourite Songs" : "* All Songs"
+      } Looped`;
+      break;
+    case "shuffle":
+      noteText = `${
+        songsListArray == favSongs ? "* Favourite Songs" : "* All Songs"
+      } Shuffled`;
+      break;
+    case "repeat_one":
+      noteText = `* Current Song Looped`;
+      break;
+  }
+}
+function displayNoteText(noteText) {
+  note.textContent = noteText;
+  note.style.opacity = 1;
 }
