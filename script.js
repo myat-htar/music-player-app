@@ -25,7 +25,7 @@ let songs = [
   },
   {
     id: 4,
-    songName: "Nandemonaiya",
+    songName: "なんでもないや",
     singer: "Radwimps",
     audio: "./song audios/Nandemonaiya - Radwimps.mp3",
     image: "./song images/Nandemonaiya - Radwimps.jpg",
@@ -49,7 +49,7 @@ let songs = [
   },
   {
     id: 7,
-    songName: "Sparkle",
+    songName: "スパークル",
     singer: "Radwimps",
     audio: "./song audios/Sparkle- Radwimps.mp3",
     image: "./song images/Sparkle- Radwimps.jpg",
@@ -442,6 +442,9 @@ function updateSong() {
   audio.play();
   addStyleToPlayingSong();
   updateSongDetails(playingSongItem);
+  // Buffering Notification Showing
+  bufferingNoti.style.opacity = "1";
+  bufferingNoti.style.zIndex = "999";
 }
 
 // change repeat icon
