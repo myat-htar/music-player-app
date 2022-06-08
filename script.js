@@ -96,7 +96,8 @@ const wrapper = document.querySelector(".wrapper"),
   nextBtn = songDetails.querySelector(".next"),
   prevBtn = songDetails.querySelector(".prev"),
   repeatSongList = songDetails.querySelector(".repeat-song-list"),
-  note = document.querySelector(".note");
+  note = document.querySelector(".note"),
+  bufferingNoti = document.querySelector(".buffering-noti");
 let favSongs = getFromLocalStorage().filter((song) => song.isFavourite == true),
   songsListArray,
   playingSongID,
@@ -144,15 +145,19 @@ songsList.addEventListener("click", (e) => {
   songsList.setAttribute("data-song_id", playingSongID);
   playingSongItem = songs.find((song) => songsList.dataset.song_id == song.id);
   audio.src = playingSongItem.audio;
-  audio.currentTime = 0;
-  updateSongList();
+  audio.load();
   audio.play();
+  updateSongList();
   addStyleToPlayingSong();
   showSongData(playingSongItem);
+  updateSongDetails(playingSongItem);
+  // Buffering Notification Showing
+  bufferingNoti.style.opacity = "1";
+  bufferingNoti.style.zIndex = "999";
 
   // display note what song list is playing
   getNoteText();
-  displayNoteText(noteText);
+  showNoteText(noteText);
 });
 
 // open song details box
@@ -191,6 +196,9 @@ audio.addEventListener("timeupdate", (e) => {
 });
 audio.addEventListener("loadeddata", () => {
   playingSongDuration.textContent = getFormattedTimeInMinAndSec(audio.duration);
+  // hide buffering notification if the song data is loaded
+  bufferingNoti.style.opacity = "0";
+  bufferingNoti.style.zIndex = "-999";
 });
 
 // click progress bar to update current time
@@ -430,6 +438,7 @@ function updateSong() {
   playingSongItem = songs.find((song) => songsList.dataset.song_id == song.id);
   showSongData(playingSongItem);
   audio.src = playingSongItem.audio;
+  audio.load();
   audio.play();
   addStyleToPlayingSong();
   updateSongDetails(playingSongItem);
@@ -446,19 +455,19 @@ function changeRepeatIcon(e) {
       e.currentTarget.title = "Song Looped";
       // changing note text according to button icon
       noteText = `* Current Song Looped`;
-      displayNoteText(noteText);
+      showNoteText(noteText);
       break;
     case "repeat_one":
       isShuffle = true;
       e.currentTarget.innerText = "shuffle";
       e.currentTarget.title = "Playback Shuffled";
-      displayNoteText(`${noteText} Shuffled`);
+      showNoteText(`${noteText} Shuffled`);
       break;
     case "shuffle":
       isShuffle = false;
       e.currentTarget.innerText = "repeat";
       e.currentTarget.title = "Playlist Looped";
-      displayNoteText(`${noteText} Looped`);
+      showNoteText(`${noteText} Looped`);
       break;
   }
 }
@@ -515,7 +524,7 @@ function getNoteText() {
       break;
   }
 }
-function displayNoteText(noteText) {
+function showNoteText(noteText) {
   note.textContent = noteText;
   note.style.opacity = 1;
 }
